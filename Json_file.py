@@ -1,7 +1,7 @@
 import json
 import os 
-train_dir = os.path.join('/content/drive/My Drive/Colab Notebooks/myDataset/DT', 'training')
-valid_dir = os.path.join('/content/drive/My Drive/Colab Notebooks/myDataset/DT', 'valid')
+train_dir = os.path.join('MaskNonMaskDataset/', 'training')
+valid_dir = os.path.join('MaskNonMaskDataset/', 'valid')
 
 train_class_name = [x[1] for x in os.walk(train_dir)]
 train_class_name = train_class_name[0]
@@ -14,13 +14,13 @@ valid_json = {}
  
 for tcn in train_class_name:
   
-  address =  '/content/drive/My Drive/Colab Notebooks/myDataset/DT/training/' + tcn
+  address =  'MaskNonMaskDataset/training/' + tcn
   for x in os.walk(address):
 
     train_json[tcn] = x[2] 
 for vcn in valid_class_name:
   
-  address =  '/content/drive/My Drive/Colab Notebooks/myDataset/DT/valid/' + vcn
+  address =  'MaskNonMaskDataset/valid/' + vcn
   for x in os.walk(address):
     
     valid_json[vcn] = x[2] 
