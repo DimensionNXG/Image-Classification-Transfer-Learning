@@ -15,8 +15,8 @@ aug = ImageDataGenerator(
 	horizontal_flip=True,
 	fill_mode="nearest")
 
-train_aug = os.path.join('/content/drive/My Drive/Colab Notebooks/Dataset/', 'training')
-valid_aug = os.path.join('/content/drive/My Drive/Colab Notebooks/Dataset/', 'validation')
+train_aug = os.path.join('MaskNonMaskDataset/', 'training')
+valid_aug = os.path.join('MaskNonMaskDataset/', 'valid')
 
 train_cln_aug = [x[1] for x in os.walk(train_aug)]
 train_cln_aug = train_cln_aug[0]
@@ -27,7 +27,7 @@ valid_cln_aug = valid_cln_aug[0]
  
 for tcg in train_cln_aug:
   
-  save_to_dir = '/content/drive/My Drive/Colab Notebooks/Dataset/training/' + tcg
+  save_to_dir = 'MaskNonMaskDataset/training/' + tcg
   filename =  save_to_dir +'/*.jpg'
   im=Image.open(filename)
   image_list.append(im)
@@ -48,7 +48,7 @@ for tcg in train_cln_aug:
 
 for vcg in train_cln_aug:
   
-  save_to_dir = '/content/drive/My Drive/Colab Notebooks/Dataset/validation/' + vcg
+  save_to_dir = 'MaskNonMaskDataset/valid/' + vcg
   filename =  save_to_dir +'/*.jpg'
   im=Image.open(filename)
   image_list.append(im)
