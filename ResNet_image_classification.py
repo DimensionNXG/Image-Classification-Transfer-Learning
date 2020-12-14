@@ -4,7 +4,7 @@ import tensorflow as tf #tf 2.0.0
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from tensorflow.keras import Model 
+from tensorflow.keras import Model
 from tensorflow.keras.layers import Conv2D, Dense, MaxPooling2D, Dropout, Flatten,GlobalAveragePooling2D
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -33,44 +33,26 @@ valid_data_gen = ImageDataGenerator(rotation_range=45,
                                     cval=0,
                                     rescale=1./255)
 
-test_data_gen = ImageDataGenerator(rescale=1./255)
+#test_data_gen = ImageDataGenerator(rescale=1./255)
 
-dataset_dir = os.path.join('/content/drive/My Drive/Colab Notebooks/myDataset', 'DT')
+dataset_dir = os.path.join('Dataset')
 
-Batch_size = 8
-img_h = 256
-img_w = 256
-num_classes=20
+Batch_size = 1
+img_h = 112
+img_w = 112
+num_classes=2
 
-classes = ['owl', # 0
-            'galaxy', # 1
-            'lightning', # 2
-            'wine-bottle', # 3
-            't-shirt', # 4
-            'waterfall',# 5
-            'sword', # 6
-            'school-bus',# 7           
-            'calculator', # 8
-            'sheet-music', #9            
-            'airplanes',#10      
-            'lightbulb', # 11
-            'skyscraper',#12    
-            'mountain-bike',#13          
-            'fireworks', #14        
-            'computer-monitor',#15              
-            'bear',# 16
-            'grand-piano', # 17
-            'kangaroo', # 18
-            'laptop', #19
+classes = ['Mask', # 0
+            'NonMask', # 1
            ]
 
 # Training
 SEED = 1234
-tf.random.set_seed(SEED) 
+tf.random.set_seed(SEED)
 
 training_dir = os.path.join(dataset_dir, 'training')
 train_gen = train_data_gen.flow_from_directory(training_dir,
-                                               target_size=(256, 256),
+                                               target_size=(112, 112),
                                                batch_size=Batch_size,
                                                classes=classes,
                                                class_mode='categorical',
@@ -80,21 +62,12 @@ train_gen = train_data_gen.flow_from_directory(training_dir,
 # Validation
 valid_dir = os.path.join(dataset_dir, 'valid')
 valid_gen = valid_data_gen.flow_from_directory(valid_dir,
-                                           target_size=(256, 256),
-                                           batch_size=Batch_size, 
+                                           target_size=(112, 112),
+                                           batch_size=Batch_size,
                                            classes=classes,
                                            class_mode='categorical',
                                            shuffle=False,
                                            seed=SEED)
-# Test
-test_dir = os.path.join(dataset_dir, 'testing')
-test_gen = test_data_gen.flow_from_directory(test_dir,
-                                             target_size=(256, 256),
-                                             batch_size=10, 
-                                             shuffle=False,
-                                             seed=SEED,
-                                             class_mode=None,
-                                             )
 
 # ResNet152V2 Model
 ResNet_model = tf.keras.applications.ResNet152V2(weights='imagenet', include_top=False, input_shape=(img_h, img_w, 3))
@@ -110,7 +83,7 @@ x = Dense(units=512, activation='relu')(x)
 x = Dropout(0.3)(x)
 x = Dense(units=512, activation='relu')(x)
 x = Dropout(0.3)(x)
-output  = Dense(units=20, activation='softmax')(x)
+output  = Dense(units=2, activation='softmax')(x)
 model = Model(ResNet_model.input, output)
 
 model.summary()
@@ -119,10 +92,10 @@ loss = tf.keras.losses.CategoricalCrossentropy()
 optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
 model.compile(optimizer=optimizer, loss=loss, metrics= ['accuracy'])
 
-lrr = ReduceLROnPlateau(monitor='val_accuracy', 
-                        patience=3, 
-                        verbose=1, 
-                        factor=0.4, 
+lrr = ReduceLROnPlateau(monitor='val_accuracy',
+                        patience=3,
+                        verbose=1,
+                        factor=0.4,
                         min_lr=0.0001)
 
 
@@ -138,34 +111,34 @@ transfer_learning_history = model.fit_generator(generator=train_gen,
                    epochs=20,
                   callbacks=callbacks,
                   class_weight='auto',
-                  
-                    
+
+
 )
 
 # model evaluate with validation set
 model.evaluate(valid_gen, steps=STEP_SIZE_VALID,verbose=1)
 
-STEP_SIZE_TEST=test_gen.n//test_gen.batch_size
-test_gen.reset()
-pred=model.predict(test_gen,
-steps=STEP_SIZE_TEST,
-verbose=1)
+#STEP_SIZE_TEST=test_gen.n//test_gen.batch_size
+#test_gen.reset()
+#pred=model.predict(test_gen,
+#steps=STEP_SIZE_TEST,
+#verbose=1)
 
-predicted_class_indices=np.argmax(pred,axis=1)
+#predicted_class_indices=np.argmax(pred,axis=1)
 
 # CSV file for kaggle submission
 
-labels = train_gen.class_indices
-labels = dict((v,k) for k,v in labels.items())
-predictions = [k for k in predicted_class_indices]
+#labels = train_gen.class_indices
+#labels = dict((v,k) for k,v in labels.items())
+#predictions = [k for k in predicted_class_indices]
 
-filenames=test_gen.filenames
-FN=[]
-for i in filenames:
-  f = i[5:]
-  FN.append(f)
-  
+#filenames=test_gen.filenames
+#FN=[]
+#for i in filenames:
+#  f = i[5:]
+#  FN.append(f)
 
-results=pd.DataFrame({"Id":FN,
-                      "Category":predictions})
-results.to_csv("submission.csv",index=False)
+
+#results=pd.DataFrame({"Id":FN,
+#                      "Category":predictions})
+#results.to_csv("submission.csv",index=False)
