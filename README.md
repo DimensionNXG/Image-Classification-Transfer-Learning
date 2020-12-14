@@ -1,6 +1,5 @@
 # Revisions made
-Uncompress MaskNonMaskDataset.zip and follow standard instructions.
-
+Uncompress MaskNonMaskDataset.zip and use the updated jupyter notebook (ResNet_image_classification.ipynb)
 # Image-Classification-Transfer-Learning
 ### Building ResNet152V2 Model for Image Classification with Small Dataset (99.5% accuracy)
 
